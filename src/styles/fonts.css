@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "Interface";
+  src: url("/fonts/interface.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SansCustom";
+  src: url("/fonts/sans.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SlabCustom";
+  src: url("/fonts/slab.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MonoCustom";
+  src: url("/fonts/mono.woff2") format("woff2");
+  font-display: swap;
+}
+
+@theme {
+  --font-interface: "Interface", sans-serif;
+  --font-sans: "SansCustom", sans-serif;
+  --font-slab: "SlabCustom", serif;
+  --font-mono: "MonoCustom", monospace;
+}

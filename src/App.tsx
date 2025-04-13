@@ -1,4 +1,4 @@
 function App() {
-  return <div>App</div>;
+  return <main className="font-[var(--font-interface)]"></main>;
 }
 export default App;
