@@ -20,10 +20,13 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
 import type { FontSizeType, FontType, ThemeType } from "~/lib/types";
+import { useText } from "~/context/TextContext";
 
 export function Toolbar() {
   const { font, setFont, fontSize, setFontSize, themeStyle, setThemeStyle } =
     usePreferences();
+  const { handleDeleteText } = useText();
+
   const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">(
     "idle"
   );
@@ -69,12 +72,21 @@ export function Toolbar() {
   };
 
   const handleDelete = () => {
-    alert("remove the content");
+    try {
+      handleDeleteText();
+      setDeleteStatus("success");
+    } catch (err) {
+      setDeleteStatus("error");
+      console.error("failed to delete content:", err);
+    } finally {
+      setTimeout(() => {
+        setDeleteStatus("idle");
+      }, 1500);
+    }
   };
 
   return (
     <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 p-3 bg-background/95 rounded-lg">
-      {/* Font Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -98,7 +110,6 @@ export function Toolbar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Font Size Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -122,7 +133,6 @@ export function Toolbar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Theme Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -154,7 +164,7 @@ export function Toolbar() {
       <Button
         variant="ghost"
         size="default"
-        className="h-10 w-10 p-2 hover:cursor-pointer transition-transform duration-200 ease-in-out"
+        className="h-10 w-10 p-2"
         onClick={handleCopy}
       >
         {copyStatus === "idle" && <Clipboard className="h-4 w-4" />}
@@ -169,16 +179,15 @@ export function Toolbar() {
       <Button
         variant="ghost"
         size="default"
-        className="h-10 w-10 p-2 hover:cursor-pointer transition-transform duration-200 ease-in-out"
+        className="h-10 w-10 p-2"
         onClick={handleDelete}
       >
-        {deleteStatus === "idle" && <Trash className="h-4 w-4" />}
-        {deleteStatus === "success" && (
-          <Trash className="h-4 w-4 text-green-500 animate-ping-once" />
-        )}
-        {deleteStatus === "error" && (
-          <Trash className="h-4 w-4 text-gray-500 animate-ping-once" />
-        )}
+        <Trash
+          className={cn("h-4 w-4", {
+            "text-red-500 animate-ping-once": deleteStatus === "success",
+            "text-red-500/70": deleteStatus === "error",
+          })}
+        />
       </Button>
     </div>
   );

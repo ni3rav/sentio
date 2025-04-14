@@ -1,22 +1,9 @@
-import { useEffect, useState } from "react";
 import { usePreferences } from "~/context/PreferencesContext";
+import { useText } from "~/context/TextContext";
 
 function Editor() {
   const { font, fontSize, themeStyle } = usePreferences();
-  const [text, setText] = useState("");
-
-  useEffect(() => {
-    const persistedText = localStorage.getItem("sentio-content");
-    if (persistedText) {
-      setText(persistedText);
-    }
-  }, []);
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = e.target.value;
-    setText(newText);
-    localStorage.setItem("sentio-content", newText);
-  };
+  const { text, handleTextChange } = useText();
 
   const textareaClasses = [
     "h-screen",
@@ -43,6 +30,7 @@ function Editor() {
       ? "bg-neutral-900 text-cyan-50"
       : "bg-cyan-50 text-gray-950",
   ].join(" ");
+
   return (
     <textarea
       spellCheck={false}
@@ -50,7 +38,7 @@ function Editor() {
       autoCorrect="off"
       autoCapitalize="off"
       value={text}
-      onChange={handleTextChange}
+      onChange={(e) => handleTextChange(e.target.value)}
       className={textareaClasses}
       style={{
         resize: "none",
@@ -65,4 +53,5 @@ function Editor() {
     />
   );
 }
+
 export default Editor;
