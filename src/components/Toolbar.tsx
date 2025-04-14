@@ -1,5 +1,15 @@
-import type React from "react";
-import { Check, Moon, Sun, Type, Sunset } from "lucide-react";
+import React, { useState } from "react";
+import {
+  Check,
+  Moon,
+  Sun,
+  Type,
+  Sunset,
+  Clipboard,
+  ClipboardCheck,
+  ClipboardX,
+  Trash,
+} from "lucide-react";
 import { usePreferences } from "~/context/PreferencesContext";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,6 +24,13 @@ import type { FontSizeType, FontType, ThemeType } from "~/lib/types";
 export function Toolbar() {
   const { font, setFont, fontSize, setFontSize, themeStyle, setThemeStyle } =
     usePreferences();
+  const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">(
+    "idle"
+  );
+
+  const [deleteStatus, setDeleteStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const fonts: { value: FontType; label: string }[] = [
     { value: "sans", label: "sans" },
@@ -35,8 +52,29 @@ export function Toolbar() {
     { value: "sepia", label: "sepia", icon: <Sunset className="h-5 w-5" /> },
   ];
 
+  const handleCopy = () => {
+    try {
+      navigator.clipboard.writeText(
+        localStorage.getItem("sentio-content")?.trim() || ""
+      );
+      setCopyStatus("success");
+    } catch (error) {
+      setCopyStatus("error");
+      console.error("failed to copy content:", error);
+    } finally {
+      setTimeout(() => {
+        setCopyStatus("idle");
+      }, 1500);
+    }
+  };
+
+  const handleDelete = () => {
+    alert("remove the content");
+  };
+
   return (
     <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 p-3 bg-background/95 rounded-lg">
+      {/* Font Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -60,6 +98,7 @@ export function Toolbar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Font Size Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -83,6 +122,7 @@ export function Toolbar() {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Theme Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -110,6 +150,36 @@ export function Toolbar() {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Button
+        variant="ghost"
+        size="default"
+        className="h-10 w-10 p-2 hover:cursor-pointer transition-transform duration-200 ease-in-out"
+        onClick={handleCopy}
+      >
+        {copyStatus === "idle" && <Clipboard className="h-4 w-4" />}
+        {copyStatus === "success" && (
+          <ClipboardCheck className="h-4 w-4 text-green-500 animate-ping-once" />
+        )}
+        {copyStatus === "error" && (
+          <ClipboardX className="h-4 w-4 text-red-500 animate-ping-once" />
+        )}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="default"
+        className="h-10 w-10 p-2 hover:cursor-pointer transition-transform duration-200 ease-in-out"
+        onClick={handleDelete}
+      >
+        {deleteStatus === "idle" && <Trash className="h-4 w-4" />}
+        {deleteStatus === "success" && (
+          <Trash className="h-4 w-4 text-green-500 animate-ping-once" />
+        )}
+        {deleteStatus === "error" && (
+          <Trash className="h-4 w-4 text-gray-500 animate-ping-once" />
+        )}
+      </Button>
     </div>
   );
 }
