@@ -21,6 +21,7 @@ import {
 import { cn } from "~/lib/utils";
 import type { FontSizeType, FontType, ThemeType } from "~/lib/types";
 import { useText } from "~/context/TextContext";
+import { Timer } from "~/components/TImer";
 
 export function Toolbar() {
   const { font, setFont, fontSize, setFontSize, themeStyle, setThemeStyle } =
@@ -87,6 +88,7 @@ export function Toolbar() {
 
   return (
     <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 p-3 bg-background/95 rounded-lg">
+      <Timer />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
