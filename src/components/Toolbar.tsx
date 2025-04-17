@@ -22,6 +22,7 @@ import { cn } from "~/lib/utils";
 import type { FontSizeType, FontType, ThemeType } from "~/lib/types";
 import { useText } from "~/context/TextContext";
 import { Timer } from "~/components/TImer";
+import { DownloadButton } from "./DownloadButton";
 
 export function Toolbar() {
   const { font, setFont, fontSize, setFontSize, themeStyle, setThemeStyle } =
@@ -87,8 +88,18 @@ export function Toolbar() {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 p-3 bg-background/95 rounded-lg">
+    <div
+      className={cn(
+        "fixed z-50 flex items-center gap-3 p-3 bg-background/95",
+        "h-16", // consistent height
+        "left-0 right-0 bottom-0 md:left-4 md:bottom-auto md:bottom-4 md:right-auto", // positioning
+        "md:rounded-lg", // rounded only on md and up
+        "w-full md:w-auto", // full width on mobile, auto on md+
+        "justify-between md:justify-start" // spacing control
+      )}
+    >
       <Timer />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="default" className="h-10 w-10 p-2">
@@ -177,6 +188,8 @@ export function Toolbar() {
           <ClipboardX className="h-4 w-4 text-red-500 animate-ping-once" />
         )}
       </Button>
+
+      <DownloadButton />
 
       <Button
         variant="ghost"
