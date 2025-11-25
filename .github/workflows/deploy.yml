@@ -1,0 +1,54 @@
+name: Deploy to Sentio VM
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: Install backend deps
+        run: bun install
+
+      - name: Install frontend deps & build
+        run: |
+          cd client
+          bun install
+          bun run build
+          cd ..
+
+      - name: Create production bundle
+        run: |
+          mkdir bundle
+          cp -r index.ts package.json bun.lockb tsconfig.json bundle/
+          cp -r client bundle/client
+          tar -czf app.tar.gz -C bundle .
+
+      - name: Upload bundle to VM
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deploy
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "app.tar.gz"
+          target: "/var/www/sentio/deploy/app.tar.gz"
+
+      - name: Trigger deploy script
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deploy
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /var/www/sentio/deploy
+            ./deploy.sh
