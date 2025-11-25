@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
 
 export default function App() {
-  const serverUrl = import.meta.env.SERVER_URL || "http://localhost:3000";
+  const serverUrl = import.meta.env.DEV ? "http://localhost:3000" : "";
 
   const [number, setNumber] = useState<number | null>(null);
   useEffect(() => {
     async function getNumber() {
-      const response: {
-        random_number: number;
-      } = await fetch(`${serverUrl}/number`).then((res) => res.json());
-      return response.random_number;
+      try {
+        const response = await fetch(`${serverUrl}/number`);
+        if (!response.ok) throw new Error("Failed to fetch");
+        const data: { random_number: number } = await response.json();
+        return data.random_number;
+      } catch (error) {
+        console.error("Error fetching number:", error);
+        return null;
+      }
     }
 
     (async () => {
@@ -19,7 +24,9 @@ export default function App() {
   }, [serverUrl]);
   return (
     <>
-      <h1>{number ? `Server gave ${number}` : "Server has not given a number"}</h1>
+      <h1>
+        {number ? `Server gave ${number}` : "Server has not given a number"}
+      </h1>
     </>
   );
 }
