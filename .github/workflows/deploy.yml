@@ -30,7 +30,7 @@ jobs:
       - name: Create production bundle
         run: |
           mkdir bundle
-          cp -r index.ts package.json bun.lockb tsconfig.json bundle/
+          cp -r index.ts package.json bun.lock tsconfig.json bundle/
           cp -r client bundle/client
           tar -czf app.tar.gz -C bundle .
 
