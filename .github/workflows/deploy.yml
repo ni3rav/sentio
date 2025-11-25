@@ -41,7 +41,7 @@ jobs:
           username: deploy
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "app.tar.gz"
-          target: "/var/www/sentio/deploy/app.tar.gz"
+          target: "/var/www/sentio/deploy"
 
       - name: Trigger deploy script
         uses: appleboy/ssh-action@v0.1.7
